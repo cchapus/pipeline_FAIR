@@ -1,0 +1,64 @@
+---
+title: "quarto_demo"
+format: html
+editor: visual
+---
+
+## Deseq2[¶](https://ondemand.cluster.france-bioinformatique.fr/node/cpu-node-23.ifb.local/52978/lab/tree/shared/projects/2412_fairbioinfo/usecase/Deseq2.ipynb#Deseq2)
+
+### Summary
+
+`DESeq2` is a widely used bioinformatics tool for differential gene expression analysis from RNA sequencing (RNA-seq) data. Here's a concise overview of its functionality:
+
+1.  **Differential Expression Analysis:** DESeq2 performs statistical analysis to identify genes that are differentially expressed between experimental conditions or sample groups.
+
+2.  **Input Data:** Accepts count data derived from RNA-seq experiments, typically in the form of read counts mapped to genomic features such as genes or transcripts.
+
+3.  **Normalization:** DESeq2 employs normalization techniques to account for differences in sequencing depth and other technical biases across samples, ensuring accurate comparisons between conditions.
+
+4.  **Statistical Modeling:** Utilizes negative binomial distribution-based models to estimate variance and test for differential expression, taking into account sample variability and experimental design factors.
+
+5.  **Multiple Testing Correction:** Corrects for multiple hypothesis testing using methods such as the Benjamini-Hochberg procedure to control the false discovery rate (FDR) and reduce the likelihood of spurious results.
+
+6.  **Visualization:** Provides functions for visualizing expression data, including heatmaps, volcano plots, and principal component analysis (PCA) plots, facilitating interpretation and exploration of results.
+
+7.  **Annotation:** Allows for annotation of differentially expressed genes with biological metadata such as gene symbols, functional annotations, and pathway information, aiding in biological interpretation.
+
+8.  **Integration with Workflows:** DESeq2 can be seamlessly integrated into bioinformatics pipelines and workflows, serving as a fundamental tool for gene expression analysis in diverse biological studies.
+
+In summary, `DESeq2` is a powerful and widely adopted tool for differential gene expression analysis from RNA-seq data, providing robust statistical methods and comprehensive functionalities for biological interpretation.
+
+### Code
+
+```{r}
+# Get Data 
+data = read.table(file = "deseq2_demo.tsv",  header = TRUE, row.names = 1, sep="\t")
+data$Gene = rownames(data)
+head(data)
+```
+
+## Volcano plot en ggplot
+
+```{r}
+library(ggplot2)
+
+pvalue_threshold <- 0.05
+
+p <- ggplot(data, aes(x = log2FoldChange, y = -log10(pvalue))) +
+  geom_point(color = ifelse(data$pvalue < pvalue_threshold, "red", "black")) +
+  scale_color_manual(values = c("black", "red")) +
+  geom_text(data = subset(data, pvalue < pvalue_threshold), aes(label = Gene), vjust = 1) +
+  labs(x = "Log2FoldChange", y = "-log10(p-value)") +
+  theme_minimal()
+
+p
+
+```
+
+## Volcano plot en Plotly
+
+```{r}
+library(plotly)
+p <- ggplotly(p)
+p
+```
